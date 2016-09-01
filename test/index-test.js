@@ -103,6 +103,17 @@ tape("source.read(length) can subsequently yield fewer than length bytes at the 
       });
 });
 
+tape("source.read(length) can read in parallel without getting confused", function(test) {
+  file.open("test/hello.txt")
+      .then(function(hello) {
+        Promise.all([
+          hello.read(5).then(function(buffer) { test.equal(buffer.toString(), "Hello"); }),
+          hello.read(7).then(function(buffer) { test.equal(buffer.toString(), ", world"); })
+        ])  .then(function() { return hello.close(); })
+            .then(function() { test.end(); });
+      });
+});
+
 tape("source.close() throws an error if the source is already closed", function(test) {
   var hello = file.source();
   hello.close()
