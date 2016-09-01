@@ -11,9 +11,23 @@ file.open("test/hello.txt")
     return hello.read(5)
       .then(function(buffer) { console.log(buffer); return hello.skip(2).readString(5); })
       .catch(function(error) { return hello.close().then(function() { throw error; }); })
-      .then(function(string) { console.log(string); return hello.close(); })
-      .then(function() { console.log("closed"); });
+      .then(function(string) { console.log(string); return hello.close(); });
   })
+  .then(function() { console.log("closed"); })
+  .catch(function(error) { console.error(error.stack); });
+```
+
+Or equivalently:
+
+```js
+var hello = file.source();
+
+hello.open("test/hello.txt")
+  .then(function() { console.log("opened"); return hello.read(5); })
+  .then(function(buffer) { console.log(buffer); return hello.skip(2).readString(5); })
+  .catch(function(error) { return hello.close().then(function() { throw error; }); })
+  .then(function(string) { console.log(string); return hello.close(); })
+  .then(function() { console.log("closed"); })
   .catch(function(error) { console.error(error.stack); });
 ```
 
