@@ -82,10 +82,10 @@ file.open("hello.txt")
   .then(function(hello) {
     return hello.read(5)
       .then(function(buffer) { console.log(buffer); })
-      .catch(function(error) { console.error("read", error.stack); })
+      .catch(function(error) { console.error("couldn’t read", error.stack); })
       .then(function() { console.log("closed"); });
   })
-  .catch(function(error) { console.error("open", error.stack); });
+  .catch(function(error) { console.error("couldn’t open", error.stack); });
 ```
 
 <a name="source_readDoubleBE" href="#source_readDoubleBE">#</a> <i>source</i>.<b>readDoubleBE</b>() [<>](https://github.com/mbostock/file-source/blob/master/source/read/doubleBE.js "Source")
