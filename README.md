@@ -33,11 +33,13 @@ var file = require("file-source");
 
 <a name="source" href="#source">#</a> <i>file</i>.<b>source</b>() [<>](https://github.com/mbostock/file-source/blob/master/index.js#L3 "Source")
 
-Returns a new file source. The source is initially closed; use [*file*.open](#open) or [*source*.open](#source_open) to open a file. For example:
+Returns a new file source. For example:
 
 ```js
 var hello = file.source();
 ```
+
+The source is initially closed; use [*file*.open](#open) or [*source*.open](#source_open) to open a file.
 
 <a name="open" href="#open">#</a> <i>file</i>.<b>open</b>(<i>path</i>) [<>](https://github.com/mbostock/file-source/blob/master/index.js#L7 "Source")
 
