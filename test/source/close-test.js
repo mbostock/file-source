@@ -11,7 +11,7 @@ tape("source.close() yields a closed file.source", function(test) {
 });
 
 tape("source.close() throws an error if the source is already closed", function(test) {
-  file.source()
-    .close()
-    .catch(function(error) { test.equal(error.message, "not open"); test.end(); });
+  var hello = file.source();
+  test.throws(function() { hello.close(); }, /not open/);
+  test.end();
 });

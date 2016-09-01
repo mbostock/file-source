@@ -71,15 +71,14 @@ tape("source.read(length) can subsequently yield fewer than length bytes at the 
     });
 });
 
-tape("source.read(length) can read in parallel without getting confused", function(test) {
+tape("source.read(length) concurrently throws an error", function(test) {
   file.open("test/hello.txt")
     .then(function(hello) {
-      Promise.all([
-          hello.read(5).then(function(buffer) { test.equal(buffer.toString(), "Hello"); }),
-          hello.read(7).then(function(buffer) { test.equal(buffer.toString(), ", world"); })
-        ])
+      hello.read(5)
         .then(function() { return hello.close(); })
         .then(function() { test.end(); });
+
+      test.throws(function() { hello.read(7); }, /concurrent operation/);
     });
 });
 
@@ -102,7 +101,7 @@ tape("source.read(length) floors a fractional length", function(test) {
 });
 
 tape("source.read(length) throws an error if the source is not open", function(test) {
-  file.source("test/hello.txt")
-    .read(5)
-    .catch(function(error) { test.equal(error.message, "not open"); test.end(); });
+  var hello = file.source("test/hello.txt");
+  test.throws(function() { hello.read(5); }, /not open/);
+  test.end();
 });

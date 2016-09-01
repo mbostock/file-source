@@ -1,4 +1,5 @@
 function Source() {
+  this._active = false;
   this._fd = null;
   this._position = 0;
 }
