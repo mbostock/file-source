@@ -1,14 +1,6 @@
 # file-source
 
-This is a redesign and generalization of my [binary file reader](https://github.com/mbostock/shapefile/blob/master/file.js) in [shapefile](https://github.com/mbostock/shapefile). See also:
-
-* [binary-file](https://github.com/marvinroger/node-binary-file) by [Marvin Roger](https://github.com/marvinroger)
-* [binary-reader](https://github.com/gagle/node-binary-reader) by [Gabriel Llamas](https://github.com/gagle)
-* [pull-reader](https://github.com/dominictarr/pull-reader) by [Dominic Tarr](https://github.com/dominictarr)
-
-This is an experiment.
-
-## Usage
+A promise-y way of reading binary files.
 
 ```js
 var file = require("file-source");
@@ -16,13 +8,20 @@ var file = require("file-source");
 file.open("test/hello.txt").then(function(hello) {
   console.log("opened");
   hello.read(5)
-    .then(function(buffer) { console.log(buffer.toString()); return hello.read(2); })
-    .then(function(buffer) { return hello.read(5); })
-    .then(function(buffer) { console.log(buffer.toString()); return hello.close(); })
+    .then(function(buffer) { console.log(buffer.toString()); return hello.skip(2).readString(5); })
+    .then(function(string) { console.log(string); return hello.close(); })
     .catch(function(error) { return hello.close(); })
     .then(function() { console.log("closed"); });
 });
 ```
+
+See also:
+
+* [binary-file](https://github.com/marvinroger/node-binary-file) by [Marvin Roger](https://github.com/marvinroger)
+* [binary-reader](https://github.com/gagle/node-binary-reader) by [Gabriel Llamas](https://github.com/gagle)
+* [pull-reader](https://github.com/dominictarr/pull-reader) by [Dominic Tarr](https://github.com/dominictarr)
+
+This is an experiment.
 
 ## API Reference
 
@@ -76,7 +75,7 @@ After opening, you can call [*source*.close](#source_close) to close the file. A
 Advances this source’s position by *length* bytes and returns a promise that yields a buffer containing bytes \[*position*, … *position* + *length* - 1\], inclusive, from the underlying file. If the file is shorter than *position* + *length*, the yielded buffer may contain fewer than *length* bytes. For example:
 
 ```js
-var file = require("./");
+var file = require("file-source");
 
 file.open("hello.txt")
   .then(function(hello) {
@@ -87,6 +86,10 @@ file.open("hello.txt")
   })
   .catch(function(error) { console.error("couldn’t open", error.stack); });
 ```
+
+<a name="source_readString" href="#source_readString">#</a> <i>source</i>.<b>readString</b>(<i>length</i>[, <i>encoding</i>]) [<>](https://github.com/mbostock/file-source/blob/master/source/read/string.js "Source")
+
+[Reads](#source_read) *length* bytes, returning a promise that yields a string from the underlying file. If *encoding* is not specified, it defaults to “utf8”. If not enough bytes remain in the file, the string may derived from a buffer containing fewer than *length* bytes. See [*buffer*.toString](https://nodejs.org/api/buffer.html#buffer_buf_tostring_encoding_start_end).
 
 <a name="source_readDoubleBE" href="#source_readDoubleBE">#</a> <i>source</i>.<b>readDoubleBE</b>() [<>](https://github.com/mbostock/file-source/blob/master/source/read/doubleBE.js "Source")
 

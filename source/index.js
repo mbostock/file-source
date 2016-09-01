@@ -5,6 +5,7 @@ function Source() {
 
 Source.prototype.open = require("./open");
 Source.prototype.read = require("./read/index");
+Source.prototype.readString = require("./read/string");
 Source.prototype.readDoubleBE = require("./read/doubleBE");
 Source.prototype.readDoubleLE = require("./read/doubleLE");
 Source.prototype.readFloatBE = require("./read/floatBE");

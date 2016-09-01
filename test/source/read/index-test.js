@@ -42,6 +42,15 @@ tape("source.read(length) yields an empty buffer if there is no more to be read"
     });
 });
 
+tape("source.read(0) yeilds an empty buffer", function(test) {
+  file.open("test/hello.txt")
+    .then(function(hello) {
+      hello.read(0)
+        .then(function(buffer) { test.equal(buffer.length, 0); return hello.close(); })
+        .then(function() { test.end(); });
+    });
+});
+
 tape("source.read(length) can yield fewer than length bytes at the end of the file", function(test) {
   file.open("test/hello.txt")
     .then(function(hello) {
@@ -74,23 +83,12 @@ tape("source.read(length) can read in parallel without getting confused", functi
     });
 });
 
-tape("source.read(length) treats a negative length as zero", function(test) {
+tape("source.read(length) throws an error if the length is invalid", function(test) {
   file.open("test/hello.txt")
     .then(function(hello) {
-      hello.read(-4)
-        .then(function(buffer) { test.equal(buffer.length, 0); return hello.read(5); })
-        .then(function(buffer) { test.equal(buffer.toString(), "Hello"); return hello.close(); })
-        .then(function() { test.end(); });
-    });
-});
-
-tape("source.read(length) treats an invalid length as zero", function(test) {
-  file.open("test/hello.txt")
-    .then(function(hello) {
-      hello.read(NaN)
-        .then(function(buffer) { test.equal(buffer.length, 0); return hello.read(5); })
-        .then(function(buffer) { test.equal(buffer.toString(), "Hello"); return hello.close(); })
-        .then(function() { test.end(); });
+      test.throws(function() { hello.read(NaN); }, /invalid length/);
+      test.throws(function() { hello.read(-1); }, /invalid length/);
+      test.end();
     });
 });
 
