@@ -1,4 +1,4 @@
-var file = require("../../"),
+var file = require("../../../"),
     tape = require("tape");
 
 tape("source.read(length) yields a buffer of length bytes", function(test) {
