@@ -46,7 +46,7 @@ The source is initially closed; use [*file*.open](#open) or [*source*.open](#sou
 Returns a promise that yields an open file source for the specified *path*. A convenience method equivalent to:
 
 ```js
-file.source().open(path);
+file.source().open(path)
 ```
 
 For example:
