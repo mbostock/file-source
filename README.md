@@ -5,16 +5,16 @@ A promise-y way of reading binary files.
 ```js
 var file = require("file-source");
 
-file.open("test/hello.txt").then(function(hello) {
-  console.log("opened");
-  return hello.read(5)
-    .then(function(buffer) { console.log(buffer); return hello.skip(2).readString(5); })
-    .catch(function(error) { return hello.close().then(function() { throw error; }); })
-    .then(function(string) { console.log(string); return hello.close(); })
-    .then(function() { console.log("closed"); });
-}).catch(function(error) {
-  console.error(error.stack);
-});
+file.open("test/hello.txt")
+  .then(function(hello) {
+    console.log("opened");
+    return hello.read(5)
+      .then(function(buffer) { console.log(buffer); return hello.skip(2).readString(5); })
+      .catch(function(error) { return hello.close().then(function() { throw error; }); })
+      .then(function(string) { console.log(string); return hello.close(); })
+      .then(function() { console.log("closed"); });
+  })
+  .catch(function(error) { console.error(error.stack); });
 ```
 
 See also:
