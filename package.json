@@ -20,7 +20,8 @@
     "url": "http://github.com/mbostock/file-source.git"
   },
   "scripts": {
-    "test": "tape 'test/**/*-test.js'"
+    "test": "tape 'test/**/*-test.js'",
+    "postpublish": "git push && git push --tags"
   },
   "devDependencies": {
     "tape": "4"
