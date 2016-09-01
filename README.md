@@ -10,13 +10,14 @@ var hello = file.source();
 hello.open("test/hello.txt")
   .then(function() { console.log("opened"); return hello.read(5); })
   .then(function(buffer) { console.log(buffer); return hello.skip(2).readString(5); })
+  .then(function(string) { console.log(string); })
   .catch(function(error) { return hello.close().then(function() { throw error; }); })
-  .then(function(string) { console.log(string); return hello.close(); })
+  .then(function() { return hello.close(); })
   .then(function() { console.log("closed"); })
   .catch(function(error) { console.error(error.stack); });
 ```
 
-Or, if you prefer to avoid the local variable:
+Or, to avoid the local variable:
 
 ```js
 file.open("test/hello.txt")
@@ -24,8 +25,9 @@ file.open("test/hello.txt")
     console.log("opened");
     return hello.read(5)
       .then(function(buffer) { console.log(buffer); return hello.skip(2).readString(5); })
+      .then(function(string) { console.log(string); })
       .catch(function(error) { return hello.close().then(function() { throw error; }); })
-      .then(function(string) { console.log(string); return hello.close(); });
+      .then(function() { return hello.close(); });
   })
   .then(function() { console.log("closed"); })
   .catch(function(error) { console.error(error.stack); });
@@ -99,8 +101,9 @@ var file = require("file-source");
 file.open("hello.txt")
   .then(function(hello) {
     return hello.read(5)
+      .then(function(buffer) { console.log(buffer); })
       .catch(function(error) { return hello.close().then(function() { throw error; }); })
-      .then(function(buffer) { console.log(buffer); return hello.close(); });
+      .then(function() { return hello.close(); });
   })
   .then(function() { console.log("closed"); })
   .catch(function(error) { console.error(error.stack); });
