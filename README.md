@@ -1,10 +1,14 @@
 # file-source
 
-Read binary files in chunks, on demand, with promises. For example:
+Read binary files in chunks, on demand, with promises. To load:
 
 ```js
 var file = require("file-source");
+```
 
+To read a file in two parts, and then close it safely:
+
+```js
 var hello = file.source();
 
 hello.open("test/hello.txt")
@@ -42,12 +46,6 @@ See also:
 * A discussion on [fs.read](https://groups.google.com/d/msg/nodejs/3Gv_4EqSAOc/yJxGmjq-9YMJ)
 
 ## API Reference
-
-Below, *file* refers to the result of requiring this package. For example:
-
-```js
-var file = require("file-source");
-```
 
 <a name="source" href="#source">#</a> <i>file</i>.<b>source</b>() [<>](https://github.com/mbostock/file-source/blob/master/index.js#L3 "Source")
 
