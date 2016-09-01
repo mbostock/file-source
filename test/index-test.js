@@ -24,10 +24,10 @@ tape("source.open(path) yields the source after opening the file", function(test
 });
 
 tape("source.open(path) throws an error if the source is already open", function(test) {
-  var hello = file.source();
-  hello.open("test/hello.txt");
-  hello.open("package.json")
-      .catch(function(error) { test.equal(error.message, "already open"); test.end(); });
+  file.source()
+      .open("test/hello.txt")
+      .then(function(hello) { return hello.open("package.json"); })
+      .catch(function(error) { test.equal(error.message, "not closed"); test.end(); });
 });
 
 tape("source.open(path) can reopen a source after closing", function(test) {
@@ -114,8 +114,14 @@ tape("source.read(length) can read in parallel without getting confused", functi
       });
 });
 
+tape("source.read(length) throws an error if the source is not open", function(test) {
+  file.source("test/hello.txt")
+      .read(5)
+      .catch(function(error) { test.equal(error.message, "not open"); test.end(); });
+});
+
 tape("source.close() throws an error if the source is already closed", function(test) {
-  var hello = file.source();
-  hello.close()
-      .catch(function(error) { test.equal(error.message, "already closed"); test.end(); });
+  file.source()
+      .close()
+      .catch(function(error) { test.equal(error.message, "not open"); test.end(); });
 });

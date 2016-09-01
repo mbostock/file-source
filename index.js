@@ -11,7 +11,7 @@ function Source() {
 
 Source.prototype.open = function(path) {
   return new Promise((resolve, reject) => {
-    if (this._fd != null) return reject(new Error("already open"));
+    if (this._fd != null) return reject(new Error("not closed"));
     this._fd = -1;
     fs.open(path, "r", (error, fd) => {
       if (error) return reject(error);
@@ -24,6 +24,7 @@ Source.prototype.open = function(path) {
 
 Source.prototype.read = function(length) {
   return new Promise((resolve, reject) => {
+    if (this._fd == null) return reject(new Error("not open"));
     var source = this, buffer = new Buffer(length), position = source._position;
     source._position += length;
     (function read(offset) {
@@ -40,7 +41,7 @@ Source.prototype.read = function(length) {
 
 Source.prototype.close = function() {
   return new Promise((resolve, reject) => {
-    if (this._fd == null) return reject(new Error("already closed"));
+    if (this._fd == null) return reject(new Error("not open"));
     var fd = this._fd;
     this._fd = null;
     fs.close(fd, function(error) {
