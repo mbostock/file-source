@@ -33,8 +33,6 @@ file.open("test/hello.txt")
   .catch(function(error) { console.error(error.stack); });
 ```
 
-## Discussion
-
 Why not just promisify [fs](https://nodejs.org/api/fs.html)? It’d be a bit tedious. Missing from the official documentation is that [fs.read](https://nodejs.org/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback) [apparently](https://groups.google.com/d/msg/nodejs/3Gv_4EqSAOc/yJxGmjq-9YMJ) operates on a “best effort” basis and may return fewer than the requested bytes even if more bytes are available in the file. Also, fs.read requires you to keep track of your position in the file, rather than advancing implicitly.
 
 Why not streams? [Streams are complicated.](http://dominictarr.com/post/145135293917/history-of-streams) [Pull streams](http://dominictarr.com/post/149248845122/pull-streams-pull-streams-are-a-very-simple) are better, but I’m not happy with the suggested approach to [pull a varying number of bytes](https://github.com/pull-stream/pull-stream/issues/15). In [pull-reader](https://github.com/dominictarr/pull-reader), the underlying reads are done in fixed-size chunks and buffered. That’s probably a reasonable optimization, but it feels like a design limitation: pulls cannot be parameterized. Maybe that’s solvable, but I also wanted something promise-y in anticipation of [async & await](https://ponyfoo.com/articles/understanding-javascript-async-await).
