@@ -30,7 +30,7 @@ world
 closed
 ```
 
-Or, to avoid the local variable:
+To avoid the local variable, put [read](#source_read) and [close](#source_close) operations inside the [*source*.open](#source_open) resolution:
 
 ```js
 file.open("test/hello.txt")
