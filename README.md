@@ -35,8 +35,8 @@ file.open("test/hello.txt")
 
 See also:
 
-* [binary-file](https://github.com/marvinroger/node-binary-file) by Marvin Roger
-* [binary-reader](https://github.com/gagle/node-binary-reader) by Gabriel Llamas
+* The fluent [binary-file](https://github.com/marvinroger/node-binary-file) by Marvin Roger
+* The promise-y [binary-reader](https://github.com/gagle/node-binary-reader) by Gabriel Llamas
 * The [history of streams](http://dominictarr.com/post/145135293917/history-of-streams), [pull streams](http://dominictarr.com/post/149248845122/pull-streams-pull-streams-are-a-very-simple) and [pull-reader](https://github.com/dominictarr/pull-reader) by Dominic Tarr
 * A discussion on [binary pull streams](https://github.com/pull-stream/pull-stream/issues/15)
 * A discussion on [fs.read](https://groups.google.com/d/msg/nodejs/3Gv_4EqSAOc/yJxGmjq-9YMJ)
