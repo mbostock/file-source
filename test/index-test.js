@@ -1,107 +1,69 @@
 var file = require("../"),
     tape = require("tape");
 
-tape("file.source(path) returns a file.source", function(test) {
-  var source = file.source("test/hello.txt");
-  test.equal(source instanceof file.source, true);
-  test.end();
+tape("file.open() yields a file.source", function(test) {
+  file.open("test/hello.txt")
+      .then(function(hello) { test.equal(hello instanceof file.source, true); return hello.close(); })
+      .then(function() { test.end(); });
 });
 
-tape("file.open(path, callback) is an alias for file.source(path).open(callback)", function(test) {
-  var source = file.open("test/hello.txt");
-  test.equal(source instanceof file.source, true);
-  test.equal(source.read(5, function(error, buffer) {
-    test.equal(error, null);
-    test.equal(buffer.toString("ascii"), "Hello");
-    test.end();
-  }), source);
-});
-
-tape("source.open(callback) opens the underlying file", function(test) {
-  var source = file.source("test/hello.txt");
-  test.equal(source.open(function(error) {
-    test.equal(error, null);
-    test.end();
-  }), source);
-});
-
-tape("source.open(callback) throws an error if the file is not closed", function(test) {
-  var source = file.source("test/hello.txt").open();
-  test.throws(function() { source.open(); }, /already open/);
-  var source = file.source("test/hello.txt").open().close().open();
-  test.throws(function() { source.open(); }, /already open/);
-  test.end();
-});
-
-tape("source.open(callback) throws an error if the file was already opened", function(test) {
-  var source = file.source("test/hello.txt");
-  test.equal(source.open(function() { test.end(); }), source);
-  test.throws(function() { source.open(); }, /already open/);
-});
-
-tape("source.read(length, callback) throws an error if the file is not yet opened", function(test) {
-  var source = file.source("test/hello.txt");
-  test.throws(function() { source.read(4); }, /not open/);
-  test.end();
-});
-
-tape("source.read(length, callback) throws an error if the file was closed", function(test) {
-  var source = file.source("test/hello.txt").open().close();
-  test.throws(function() { source.read(4); }, /not open/);
-  test.end();
-});
-
-tape("source.read(length, callback) reads the specified number of bytes", function(test) {
-  file.source("test/hello.txt")
-      .open(function(error) {
-        test.equal(error, null);
-      })
-      .read(5, function(error, buffer) {
-        test.equal(error, null);
-        test.equal(buffer.toString("ascii"), "Hello");
-      })
-      .close(function(error) {
-        test.equal(error, null);
-        test.end();
+tape("source.read(length) yields a buffer of length bytes", function(test) {
+  file.open("test/hello.txt")
+      .then(function(hello) {
+        hello.read(5)
+            .then(function(buffer) { test.equal(buffer.toString(), "Hello"); return hello.close(); })
+            .then(function() { test.end(); });
       });
 });
 
-tape("source.read(length, callback) reads subsequent bytes", function(test) {
-  file.source("test/hello.txt")
-      .open(function(error) {
-        test.equal(error, null);
-      })
-      .read(5, function(error, buffer) {
-        test.equal(error, null);
-        test.equal(buffer.toString("ascii"), "Hello");
-      })
-      .read(10, function(error, buffer) {
-        test.equal(error, null);
-        test.equal(buffer.toString("ascii"), ", world!\n");
-        test.end();
+tape("source.read(length) yields a second buffer of length bytes", function(test) {
+  file.open("test/hello.txt")
+      .then(function(hello) {
+        hello.read(5)
+            .then(function(buffer) { test.equal(buffer.toString(), "Hello"); return hello.read(7); })
+            .then(function(buffer) { test.equal(buffer.toString(), ", world"); return hello.close(); })
+            .then(function() { test.end(); });
       });
 });
 
-tape("source.open(callback) resets the read position", function(test) {
-  file.source("test/hello.txt")
-      .open()
-      .read(5, function(error, buffer) {
-        test.equal(error, null);
-        test.equal(buffer.toString("ascii"), "Hello");
-      })
-      .close()
-      .open()
-      .read(5, function(error, buffer) {
-        test.equal(error, null);
-        test.equal(buffer.toString("ascii"), "Hello");
-        test.end();
+tape("source.read(length) yields a third buffer of length bytes", function(test) {
+  file.open("test/hello.txt")
+      .then(function(hello) {
+        hello.read(5)
+            .then(function(buffer) { test.equal(buffer.toString(), "Hello"); return hello.read(7); })
+            .then(function(buffer) { test.equal(buffer.toString(), ", world"); return hello.read(2); })
+            .then(function(buffer) { test.equal(buffer.toString(), "!\n"); return hello.close(); })
+            .then(function() { test.end(); });
       });
 });
 
-tape("source.close(callback) throws an error if the file is not open", function(test) {
-  var source = file.source("test/hello.txt");
-  test.throws(function() { source.close(); }, /already closed/);
-  var source = file.source("test/hello.txt").open().close();
-  test.throws(function() { source.close(); }, /already closed/);
-  test.end();
+tape("source.read(length) yields null if there is no more to be read", function(test) {
+  file.open("test/hello.txt")
+      .then(function(hello) {
+        hello.read(5)
+            .then(function(buffer) { test.equal(buffer.toString(), "Hello"); return hello.read(9); })
+            .then(function(buffer) { test.equal(buffer.toString(), ", world!\n"); return hello.read(1); })
+            .then(function(buffer) { test.equal(buffer, null); return hello.close(); })
+            .then(function() { test.end(); });
+      });
+});
+
+tape("source.read(length) can yield fewer than length bytes at the end of the file", function(test) {
+  file.open("test/hello.txt")
+      .then(function(hello) {
+        hello.read(25)
+            .then(function(buffer) { test.equal(buffer.length, 14); return buffer; })
+            .then(function(buffer) { test.equal(buffer.toString(), "Hello, world!\n"); return hello.close(); })
+            .then(function() { test.end(); });
+      });
+});
+
+tape("source.read(length) can subsequently yield fewer than length bytes at the end of the file", function(test) {
+  file.open("test/hello.txt")
+      .then(function(hello) {
+        hello.read(5)
+            .then(function(buffer) { test.equal(buffer.toString(), "Hello"); return hello.read(20); })
+            .then(function(buffer) { test.equal(buffer.toString(), ", world!\n"); return hello.close(); })
+            .then(function() { test.end(); });
+      });
 });
