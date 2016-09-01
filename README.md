@@ -6,7 +6,7 @@ Read binary files in chunks, on demand, with promises. To load:
 var file = require("file-source");
 ```
 
-To read a file in two parts, and then close it safely:
+To read a file *hello* in two parts, and then close it safely:
 
 ```js
 var hello = file.source();
