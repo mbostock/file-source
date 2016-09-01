@@ -46,6 +46,8 @@ file.open("test/hello.txt")
   .catch(function(error) { console.error(error.stack); });
 ```
 
+If available, use [*promise*.finally](https://github.com/tc39/proposal-promise-finally) to close, rather than handling resolution and rejection separately.
+
 See also:
 
 * The promise-y [binary-file](https://github.com/marvinroger/node-binary-file) by Marvin Roger
