@@ -21,6 +21,15 @@ hello.open("test/hello.txt")
   .catch(function(error) { console.error(error.stack); });
 ```
 
+The resulting output:
+
+```
+opened
+<Buffer 48 65 6c 6c 6f>
+world
+closed
+```
+
 Or, to avoid the local variable:
 
 ```js
