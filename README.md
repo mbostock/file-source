@@ -7,11 +7,13 @@ var file = require("file-source");
 
 file.open("test/hello.txt").then(function(hello) {
   console.log("opened");
-  hello.read(5)
+  return hello.read(5)
     .then(function(buffer) { console.log(buffer); return hello.skip(2).readString(5); })
+    .catch(function(error) { return hello.close().then(function() { throw error; }); })
     .then(function(string) { console.log(string); return hello.close(); })
-    .catch(function(error) { console.error(error.stack); return hello.close(); })
     .then(function() { console.log("closed"); });
+}).catch(function(error) {
+  console.error(error.stack);
 });
 ```
 
@@ -53,7 +55,7 @@ For example:
 
 ```js
 file.open("hello.txt")
-  .then(function(hello) { console.log("opened", hello); })
+  .then(function(hello) { console.log("opened", hello); return hello.close(); })
   .catch(function(error) { console.error(error.stack); });
 ```
 
@@ -64,7 +66,7 @@ Returns a promise that yields an open file source for the specified *path*, posi
 ```js
 var hello = file.source();
 hello.open("hello.txt")
-  .then(function() { console.log("opened", hello); })
+  .then(function() { console.log("opened", hello); return hello.close(); })
   .catch(function(error) { console.error(error.stack); });
 ```
 
@@ -82,8 +84,8 @@ var file = require("file-source");
 file.open("hello.txt")
   .then(function(hello) {
     return hello.read(5)
-      .then(function(buffer) { console.log(buffer); })
-      .catch(function(error) { console.error("couldn’t read", error.stack); })
+      .then(function(buffer) { console.log(buffer); return hello.close(); })
+      .catch(function(error) { console.error("couldn’t read", error.stack); return hello.close(); })
       .then(function() { console.log("closed"); });
   })
   .catch(function(error) { console.error("couldn’t open", error.stack); });
