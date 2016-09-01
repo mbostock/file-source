@@ -1,9 +1,26 @@
 var fs = require("fs");
 
-function Source(fd) {
-  this._fd = fd;
+function source() {
+  return new Source;
+}
+
+function Source() {
+  this._fd = null;
   this._position = 0;
 }
+
+Source.prototype.open = function(path) {
+  return new Promise((resolve, reject) => {
+    if (this._fd != null) return reject(new Error("already open"));
+    this._fd = -1;
+    fs.open(path, "r", (error, fd) => {
+      if (error) return reject(error);
+      this._fd = fd;
+      this._position = 0;
+      resolve(this);
+    });
+  });
+};
 
 Source.prototype.read = function(length) {
   return new Promise((resolve, reject) => {
@@ -22,20 +39,21 @@ Source.prototype.read = function(length) {
 
 Source.prototype.close = function() {
   return new Promise((resolve, reject) => {
-    fs.close(this._fd, function(error) {
+    if (this._fd == null) return reject(new Error("already closed"));
+    var fd = this._fd;
+    this._fd = null;
+    fs.close(fd, function(error) {
       if (error) return reject(error);
+      this._fd = null;
       resolve(null);
     });
   });
 };
 
 exports.open = function(path) {
-  return new Promise((resolve, reject) => {
-    fs.open(path, "r", (error, fd) => {
-      if (error) return reject(error);
-      resolve(new Source(fd, 0));
-    });
-  });
+  return source().open(path);
 };
 
-exports.source = Source;
+exports.source = source;
+
+source.prototype = Source.prototype;

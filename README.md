@@ -13,10 +13,13 @@ This is an experiment.
 ```js
 var file = require("file-source");
 
-file.open("foo.dat")
-    .then(function(foo) { console.log("open"); return foo.read(32); })
-    .then(function(foo) { console.log(foo.value); return foo.read(64); })
-    .then(function(foo) { console.log(foo.value); return foo.close(); })
-    .then(function() { console.log("closed"); })
-    .catch(function(error) { console.log(error); });
+file.open("test/hello.txt").then(function(hello) {
+  console.log("opened");
+  hello.read(5)
+      .then(function(buffer) { console.log(buffer.toString()); return hello.read(2); })
+      .then(function(buffer) { return hello.read(5); })
+      .then(function(buffer) { console.log(buffer.toString()); return hello.close(); })
+      .catch(function(error) { return hello.close(); })
+      .then(function() { console.log("closed"); });
+});
 ```

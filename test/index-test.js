@@ -1,9 +1,44 @@
 var file = require("../"),
     tape = require("tape");
 
-tape("file.open() yields a file.source", function(test) {
+tape("file.source() returns a closed file.source", function(test) {
+  var hello = file.source();
+  test.equal(hello instanceof file.source, true);
+  test.equal(hello._fd, null);
+  hello.open("test/hello.txt")
+      .then(function() { return hello.close(); })
+      .then(function() { test.end(); });
+});
+
+tape("file.open(path) yields an open file.source", function(test) {
   file.open("test/hello.txt")
       .then(function(hello) { test.equal(hello instanceof file.source, true); return hello.close(); })
+      .then(function() { test.end(); });
+});
+
+tape("source.open(path) yields the source after opening the file", function(test) {
+  var hello = file.source();
+  hello.open("test/hello.txt")
+      .then(function(_) { test.equal(_, hello); return hello.close(); })
+      .then(function() { test.end(); });
+});
+
+tape("source.open(path) throws an error if the source is already open", function(test) {
+  var hello = file.source();
+  hello.open("test/hello.txt");
+  hello.open("package.json")
+      .catch(function(error) { test.equal(error.message, "already open"); test.end(); });
+});
+
+tape("source.open(path) can reopen a source after closing", function(test) {
+  var hello = file.source();
+  hello.open("package.json")
+      .then(function() { return hello.read(1); })
+      .then(function(buffer) { test.equal(buffer.toString(), "{"); })
+      .then(function() { return hello.close(); })
+      .then(function() { return hello.open("test/hello.txt"); })
+      .then(function() { return hello.read(5); })
+      .then(function(buffer) { test.equal(buffer.toString(), "Hello"); return hello.close(); })
       .then(function() { test.end(); });
 });
 
@@ -66,4 +101,10 @@ tape("source.read(length) can subsequently yield fewer than length bytes at the 
             .then(function(buffer) { test.equal(buffer.toString(), ", world!\n"); return hello.close(); })
             .then(function() { test.end(); });
       });
+});
+
+tape("source.close() throws an error if the source is already closed", function(test) {
+  var hello = file.source();
+  hello.close()
+      .catch(function(error) { test.equal(error.message, "already closed"); test.end(); });
 });
