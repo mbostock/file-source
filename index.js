@@ -1,11 +1,14 @@
-var Source = require("./source/index");
+var BufferedSource = require("./source/buffer/index"),
+    Source = require("./source/index");
 
-function source() {
-  return new Source;
+function source(options) {
+  var source = new Source, size = 65536;
+  if (options && options.size != null) size = +options.size;
+  return size ? new BufferedSource(source, size) : source;
 }
 
-exports.open = function(path) {
-  return source().open(path);
+exports.open = function(path, options) {
+  return source(options).open(path);
 };
 
 exports.source = source;

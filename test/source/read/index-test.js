@@ -75,6 +75,11 @@ tape("source.read(length) concurrently throws an error", function(test) {
   file.open("test/hello.txt")
     .then(function(hello) {
       hello.read(5)
+        .then(function() {
+          var next = hello.read(2);
+          test.throws(function() { hello.read(7); }, /concurrent operation/);
+          return next;
+        })
         .then(function() { return hello.close(); })
         .then(function() { test.end(); });
 

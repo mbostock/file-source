@@ -58,7 +58,7 @@ See also:
 
 ## API Reference
 
-<a name="source" href="#source">#</a> <i>file</i>.<b>source</b>() [<>](https://github.com/mbostock/file-source/blob/master/index.js#L3 "Source")
+<a name="source" href="#source">#</a> <i>file</i>.<b>source</b>([<i>options</i>]) [<>](https://github.com/mbostock/file-source/blob/master/index.js#L3 "Source")
 
 Returns a new file source. For example:
 
@@ -66,14 +66,16 @@ Returns a new file source. For example:
 var hello = file.source();
 ```
 
-The source is initially closed; use [*file*.open](#open) or [*source*.open](#source_open) to open a file.
+The source is initially closed; use [*file*.open](#open) or [*source*.open](#source_open) to open a file. The supported options:
 
-<a name="open" href="#open">#</a> <i>file</i>.<b>open</b>(<i>path</i>) [<>](https://github.com/mbostock/file-source/blob/master/index.js#L7 "Source")
+* `size` - the internal buffer size, akin to Node’s `highWaterMark`
 
-Returns a promise that yields an open file source for the specified *path*. A convenience method equivalent to:
+<a name="open" href="#open">#</a> <i>file</i>.<b>open</b>(<i>path</i>[, <i>options</i>]) [<>](https://github.com/mbostock/file-source/blob/master/index.js#L7 "Source")
+
+Returns a promise that yields an open file source for the specified *path* and optional *options*. A convenience method equivalent to:
 
 ```js
-file.source().open(path)
+file.source(options).open(path)
 ```
 
 For example:
