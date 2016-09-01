@@ -79,6 +79,7 @@ Returns a promise that yields an open file source for the specified *path*, posi
 
 ```js
 var hello = file.source();
+
 hello.open("hello.txt")
   .then(function() { console.log("opened", hello); return hello.close(); })
   .catch(function(error) { console.error(error.stack); });
@@ -98,11 +99,11 @@ var file = require("file-source");
 file.open("hello.txt")
   .then(function(hello) {
     return hello.read(5)
-      .then(function(buffer) { console.log(buffer); return hello.close(); })
-      .catch(function(error) { console.error("couldn’t read", error.stack); return hello.close(); })
-      .then(function() { console.log("closed"); });
+      .catch(function(error) { return hello.close().then(function() { throw error; }); })
+      .then(function(buffer) { console.log(buffer); return hello.close(); });
   })
-  .catch(function(error) { console.error("couldn’t open", error.stack); });
+  .then(function() { console.log("closed"); })
+  .catch(function(error) { console.error(error.stack); });
 ```
 
 <a name="source_readString" href="#source_readString">#</a> <i>source</i>.<b>readString</b>(<i>length</i>[, <i>encoding</i>]) [<>](https://github.com/mbostock/file-source/blob/master/source/read/string.js "Source")
