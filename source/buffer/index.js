@@ -8,19 +8,11 @@ function BufferedSource(source, size) {
   clear(this);
 }
 
-BufferedSource.prototype = Object.create(Source.prototype);
-BufferedSource.prototype.read = require("./read");
-BufferedSource.prototype.skip = require("./skip");
-BufferedSource.prototype.seek = require("./seek");
-
-BufferedSource.prototype.open = function(path) {
-  if (this._source._active) throw new Error("concurrent operation");
-  return clear(this)._source.open(path).then(() => this);
-};
-
-BufferedSource.prototype.close = function() {
-  if (this._source._active) throw new Error("concurrent operation");
-  return clear(this)._source.close().then(() => this);
-};
+var prototype = BufferedSource.prototype = Object.create(Source.prototype);
+prototype.open = require("./open");
+prototype.read = require("./read");
+prototype.skip = require("./skip");
+prototype.seek = require("./seek");
+prototype.close = require("./close");
 
 module.exports = BufferedSource;
