@@ -97,7 +97,7 @@ If the file is shorter than *position* + *length*, the yielded buffer may contai
 ```js
 file.open("hello.txt")
   .then((hello) => Promise.resolve()
-    .then(function next() { return hello.read(20).then((record) => record.length && (console.log(record), next())); })
+    .then(function next() { return hello.read(20).then((chunk) => chunk.length && (console.log(chunk), next())); })
     .catch((error) => hello.close().then(() => { throw error; }))
     .then(() => hello.close()))
   .catch((error) => console.error(error.stack));
