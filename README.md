@@ -59,7 +59,7 @@ Returns a new file source. For example:
 var hello = file.source();
 ```
 
-The source is initially closed; use [file.open](#open) or [*source*.open](#source_open) to open a file. The supported options:
+The source is initially closed; use [file.open](#open) or [*source*.open](#source_open) to open a file. The supported options are:
 
 * `size` - the internal buffer size, akin to Node’s `highWaterMark`
 
