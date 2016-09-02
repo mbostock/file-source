@@ -58,7 +58,7 @@ See also:
 
 ## API Reference
 
-<a name="source" href="#source">#</a> <i>file</i>.<b>source</b>([<i>options</i>]) [<>](https://github.com/mbostock/file-source/blob/master/index.js#L3 "Source")
+<a name="source" href="#source">#</a> <i>file</i>.<b>source</b>([<i>options</i>]) [<>](https://github.com/mbostock/file-source/blob/master/index.js#L4 "Source")
 
 Returns a new file source. For example:
 
@@ -70,7 +70,7 @@ The source is initially closed; use [*file*.open](#open) or [*source*.open](#sou
 
 * `size` - the internal buffer size, akin to Node’s `highWaterMark`
 
-<a name="open" href="#open">#</a> <i>file</i>.<b>open</b>(<i>path</i>[, <i>options</i>]) [<>](https://github.com/mbostock/file-source/blob/master/index.js#L7 "Source")
+<a name="open" href="#open">#</a> <i>file</i>.<b>open</b>(<i>path</i>[, <i>options</i>]) [<>](https://github.com/mbostock/file-source/blob/master/index.js#L10 "Source")
 
 Returns a promise that yields an open file source for the specified *path* and optional *options*. A convenience method equivalent to:
 
@@ -102,7 +102,7 @@ Yields an error if this source is not closed or if there was an error opening th
 
 After opening, you can call [*source*.close](#source_close) to close the file. After closing, you can re-open a source with the same or different path, if desired. If this source was created using [*file*.open](#open), the yielded source is already open, and you don’t need to call this method.
 
-<a name="source_read" href="#source_read">#</a> <i>source</i>.<b>read</b>(<i>length</i>) [<>](https://github.com/mbostock/file-source/blob/master/source/read.js "Source")
+<a name="source_read" href="#source_read">#</a> <i>source</i>.<b>read</b>(<i>length</i>) [<>](https://github.com/mbostock/file-source/blob/master/source/read/index.js "Source")
 
 Advances this source’s position by *length* bytes and returns a promise that yields a buffer containing bytes \[*position*, … *position* + *length* - 1\], inclusive, from the underlying file. If the file is shorter than *position* + *length*, the yielded buffer may contain fewer than *length* bytes. For example:
 
