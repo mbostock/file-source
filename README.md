@@ -61,7 +61,7 @@ var hello = file.source();
 
 The source is initially closed; use [file.open](#open) or [*source*.open](#source_open) to open a file. The supported options are:
 
-* `size` - the internal buffer size, akin to Node’s `highWaterMark`
+* `size` - the internal buffer size, akin to Node’s highWaterMark
 
 <a name="open" href="#open">#</a> file.<b>open</b>(<i>path</i>[, <i>options</i>]) [<>](https://github.com/mbostock/file-source/blob/master/index.js#L10 "Source")
 
