@@ -53,13 +53,7 @@ See also:
 
 <a name="source" href="#source">#</a> file.<b>source</b>([<i>options</i>]) [<>](https://github.com/mbostock/file-source/blob/master/index.js#L4 "Source")
 
-Returns a new file source. For example:
-
-```js
-var hello = file.source();
-```
-
-The source is initially closed; use [file.open](#open) or [*source*.open](#source_open) to open a file. The supported options are:
+Returns a new file source. The source is initially closed; use [file.open](#open) or [*source*.open](#source_open) to open a file. The supported options are:
 
 * `size` - the internal buffer size, akin to Node’s highWaterMark
 
@@ -81,17 +75,7 @@ file.open("hello.txt")
 
 <a name="source_open" href="#source_open">#</a> <i>source</i>.<b>open</b>(<i>path</i>) [<>](https://github.com/mbostock/file-source/blob/master/source/open.js "Source")
 
-Returns a promise that yields an open file source for the specified *path*, positioned at the start of the file. For example:
-
-```js
-var hello = file.source();
-
-hello.open("hello.txt")
-  .then(() => hello.close())
-  .catch((error) => console.error(error.stack));
-```
-
-Yields an error if this source is not closed or if there was an error opening the underlying file. In this case, this source is still considered closed, and you can use this source to open another file if desired.
+Returns a promise that yields an open file source for the specified *path*, positioned at the start of the file. Yields an error if this source is not closed or if there was an error opening the underlying file. In this case, this source is still considered closed, and you can use this source to open another file if desired.
 
 After opening, you can call [*source*.close](#source_close) to close the file. After closing, you can re-open a source with the same or different path, if desired. If this source was created using [file.open](#open), the yielded source is already open, and you don’t need to call this method.
 
@@ -100,8 +84,6 @@ After opening, you can call [*source*.close](#source_close) to close the file. A
 Advances this source’s position by *length* bytes and returns a promise that yields a buffer containing bytes \[*position*, … *position* + *length* - 1\], inclusive, from the underlying file. For example:
 
 ```js
-var file = require("file-source");
-
 file.open("hello.txt")
   .then((hello) => hello.read(5)
     .then((buffer) => console.log(buffer))
@@ -110,7 +92,16 @@ file.open("hello.txt")
   .catch((error) => console.error(error.stack));
 ```
 
-If the file is shorter than *position* + *length*, the yielded buffer may contain fewer than *length* (and possibly zero) bytes.
+If the file is shorter than *position* + *length*, the yielded buffer may contain fewer than *length* (and possibly zero) bytes. For example, to read a file in 20-byte chunks:
+
+```js
+file.open("hello.txt")
+  .then((hello) => Promise.resolve()
+    .then(function next() { return hello.read(20).then((record) => record.length && (console.log(record), next())); })
+    .catch((error) => hello.close().then(() => { throw error; }))
+    .then(() => hello.close()))
+  .catch((error) => console.error(error.stack));
+```
 
 <a name="source_readString" href="#source_readString">#</a> <i>source</i>.<b>readString</b>(<i>length</i>[, <i>encoding</i>]) [<>](https://github.com/mbostock/file-source/blob/master/source/read/string.js "Source")
 
