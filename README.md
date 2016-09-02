@@ -12,13 +12,13 @@ To read a file *hello* in two parts, and then close it safely:
 var hello = file.source();
 
 hello.open("test/hello.txt")
-  .then(function() { console.log("opened"); return hello.read(5); })
-  .then(function(buffer) { console.log(buffer); return hello.skip(2).readString(5); })
-  .then(function(string) { console.log(string); })
-  .catch(function(error) { return hello.close().then(function() { throw error; }); })
-  .then(function() { return hello.close(); })
-  .then(function() { console.log("closed"); })
-  .catch(function(error) { console.error(error.stack); });
+  .then(() => (console.log("opened"), hello.read(5)))
+  .then((buffer) => (console.log(buffer), hello.skip(2).readString(5)))
+  .then((string) => console.log(string))
+  .catch((error) => hello.close().then(() => { throw error; }))
+  .then(() => hello.close())
+  .then(() => console.log("closed"))
+  .catch((error) => console.error(error.stack));
 ```
 
 The resulting output:
@@ -34,16 +34,13 @@ To avoid the local variable, put [read](#source_read) and [close](#source_close)
 
 ```js
 file.open("test/hello.txt")
-  .then(function(hello) {
-    console.log("opened");
-    return hello.read(5)
-      .then(function(buffer) { console.log(buffer); return hello.skip(2).readString(5); })
-      .then(function(string) { console.log(string); })
-      .catch(function(error) { return hello.close().then(function() { throw error; }); })
-      .then(function() { return hello.close(); });
-  })
-  .then(function() { console.log("closed"); })
-  .catch(function(error) { console.error(error.stack); });
+  .then((hello) => (console.log("opened"), hello.read(5)
+    .then((buffer) => (console.log(buffer), hello.skip(2).readString(5)))
+    .then((string) => console.log(string))
+    .catch((error) => hello.close().then(() => { throw error; }))
+    .then(() => hello.close())))
+  .then(() => console.log("closed"))
+  .catch((error) => console.error(error.stack));
 ```
 
 If available, use [*promise*.finally](https://github.com/tc39/proposal-promise-finally) to close, rather than handling resolution and rejection separately.
@@ -82,8 +79,8 @@ For example:
 
 ```js
 file.open("hello.txt")
-  .then(function(hello) { console.log("opened", hello); return hello.close(); })
-  .catch(function(error) { console.error(error.stack); });
+  .then((hello) => (console.log("opened", hello), hello.close()))
+  .catch((error) => console.error(error.stack));
 ```
 
 <a name="source_open" href="#source_open">#</a> <i>source</i>.<b>open</b>(<i>path</i>) [<>](https://github.com/mbostock/file-source/blob/master/source/open.js "Source")
@@ -94,8 +91,8 @@ Returns a promise that yields an open file source for the specified *path*, posi
 var hello = file.source();
 
 hello.open("hello.txt")
-  .then(function() { console.log("opened", hello); return hello.close(); })
-  .catch(function(error) { console.error(error.stack); });
+  .then(() => (console.log("opened", hello), hello.close()))
+  .catch((error) => console.error(error.stack));
 ```
 
 Yields an error if this source is not closed or if there was an error opening the underlying file. In this case, this source is still considered closed, and you can use this source to open another file if desired.
@@ -104,21 +101,20 @@ After opening, you can call [*source*.close](#source_close) to close the file. A
 
 <a name="source_read" href="#source_read">#</a> <i>source</i>.<b>read</b>(<i>length</i>) [<>](https://github.com/mbostock/file-source/blob/master/source/read/index.js "Source")
 
-Advances this source’s position by *length* bytes and returns a promise that yields a buffer containing bytes \[*position*, … *position* + *length* - 1\], inclusive, from the underlying file. If the file is shorter than *position* + *length*, the yielded buffer may contain fewer than *length* bytes. For example:
+Advances this source’s position by *length* bytes and returns a promise that yields a buffer containing bytes \[*position*, … *position* + *length* - 1\], inclusive, from the underlying file. For example:
 
 ```js
 var file = require("file-source");
 
 file.open("hello.txt")
-  .then(function(hello) {
-    return hello.read(5)
-      .then(function(buffer) { console.log(buffer); })
-      .catch(function(error) { return hello.close().then(function() { throw error; }); })
-      .then(function() { return hello.close(); });
-  })
-  .then(function() { console.log("closed"); })
-  .catch(function(error) { console.error(error.stack); });
+  .then((hello) => hello.read(5)
+    .then((buffer) => console.log(buffer))
+    .catch((error) => hello.close().then(() => { throw error; }))
+    .then(() => hello.close()))
+  .catch((error) => console.error(error.stack));
 ```
+
+If the file is shorter than *position* + *length*, the yielded buffer may contain fewer than *length* (and possibly zero) bytes.
 
 <a name="source_readString" href="#source_readString">#</a> <i>source</i>.<b>readString</b>(<i>length</i>[, <i>encoding</i>]) [<>](https://github.com/mbostock/file-source/blob/master/source/read/string.js "Source")
 
