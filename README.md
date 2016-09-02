@@ -12,34 +12,30 @@ To read a file *hello* in two parts, and then close it safely:
 var hello = file.source();
 
 hello.open("test/hello.txt")
-  .then(() => (console.log("opened"), hello.read(5)))
+  .then(() => hello.read(5))
   .then((buffer) => (console.log(buffer), hello.skip(2).readString(5)))
   .then((string) => console.log(string))
   .catch((error) => hello.close().then(() => { throw error; }))
   .then(() => hello.close())
-  .then(() => console.log("closed"))
   .catch((error) => console.error(error.stack));
 ```
 
 The resulting output:
 
 ```
-opened
 <Buffer 48 65 6c 6c 6f>
 world
-closed
 ```
 
 To avoid the local variable, put [read](#source_read) and [close](#source_close) operations inside the [*source*.open](#source_open) resolution:
 
 ```js
 file.open("test/hello.txt")
-  .then((hello) => (console.log("opened"), hello.read(5)
+  .then((hello) => hello.read(5)
     .then((buffer) => (console.log(buffer), hello.skip(2).readString(5)))
     .then((string) => console.log(string))
     .catch((error) => hello.close().then(() => { throw error; }))
-    .then(() => hello.close())))
-  .then(() => console.log("closed"))
+    .then(() => hello.close()))
   .catch((error) => console.error(error.stack));
 ```
 
@@ -79,7 +75,7 @@ For example:
 
 ```js
 file.open("hello.txt")
-  .then((hello) => (console.log("opened", hello), hello.close()))
+  .then((hello) => hello.close())
   .catch((error) => console.error(error.stack));
 ```
 
@@ -91,7 +87,7 @@ Returns a promise that yields an open file source for the specified *path*, posi
 var hello = file.source();
 
 hello.open("hello.txt")
-  .then(() => (console.log("opened", hello), hello.close()))
+  .then(() => hello.close())
   .catch((error) => console.error(error.stack));
 ```
 
