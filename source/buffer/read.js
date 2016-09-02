@@ -1,4 +1,5 @@
-var serialize = require("../serialize");
+var serialize = require("../serialize"),
+    clear = require("./clear");
 
 module.exports = function(length) {
   if (isNaN(length) || (length |= 0) < 0) throw new Error("invalid length");
