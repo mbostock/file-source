@@ -9,6 +9,7 @@ function BufferedSource(source, size) {
 }
 
 var prototype = BufferedSource.prototype = Object.create(Source.prototype);
+prototype.constructor = BufferedSource;
 prototype.open = require("./open");
 prototype.read = require("./read");
 prototype.skip = require("./skip");
