@@ -1,6 +1,5 @@
-var clear = require("./clear");
+var serialize = require("../serialize");
 
 module.exports = function(path) {
-  if (this._source._active) throw new Error("concurrent operation");
-  return clear(this)._source.open(path).then(() => this);
+  return serialize(this, () => this._source.open(path).then(() => this));
 };

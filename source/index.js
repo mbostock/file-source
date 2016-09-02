@@ -1,7 +1,9 @@
 function Source() {
-  this._active = false;
+  this._task = Promise.resolve();
   this._fd = null;
   this._position = 0;
+  this._skip = 0;
+  this._seek = null;
 }
 
 var prototype = Source.prototype;

@@ -1,5 +1,3 @@
 module.exports = function(position) {
-  if (this._active) throw new Error("concurrent operation");
-  this._position = Math.max(0, position | 0);
-  return this;
+  return this._skip = 0, this._seek = Math.max(0, position | 0), this;
 };

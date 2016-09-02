@@ -1,20 +1,23 @@
-var fs = require("fs");
+var fs = require("fs"),
+    serialize = require("../serialize");
 
 module.exports = function(length) {
   if (isNaN(length) || (length |= 0) < 0) throw new Error("invalid length");
-  if (this._fd == null) throw new Error("not open");
-  if (this._active) throw new Error("concurrent operation");
-  this._active = true;
-  return new Promise((resolve, reject) => {
+  var skip = this._skip, seek = this._seek;
+  this._skip = 0, this._seek = null;
+  return serialize(this, () => new Promise((resolve, reject) => {
+    if (this._fd == null) return reject(new Error("not open"));
     var source = this, buffer = new Buffer(length);
+    if (seek != null) source._position = seek;
+    else source._position += skip;
     (function read(offset) {
       fs.read(source._fd, buffer, offset, length - offset, source._position, function(error, length1) {
-        if (error) return source._active = false, reject(error);
-        if (!length1) return source._active = false, resolve(buffer.slice(0, offset));
+        if (error) return reject(error);
+        if (!length1) return resolve(buffer.slice(0, offset));
         source._position += length1;
         if ((offset += length1) < length) return read(offset);
-        source._active = false, resolve(buffer);
+        resolve(buffer);
       });
     })(0);
-  });
+  }));
 };
