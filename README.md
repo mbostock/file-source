@@ -11,7 +11,7 @@ Here’s how you might read a file in two parts, and then close it safely:
 ```js
 var source = file.source();
 
-source.open("test/hello.txt")
+source.open("example.txt")
   .then(() => source.read(5))
   .then((buffer) => (console.log(buffer), source.skip(2).readString(5)))
   .then((string) => console.log(string))
@@ -30,7 +30,7 @@ world
 To avoid the local variable, put [read](#source_read) and [close](#source_close) operations inside the [*source*.open](#source_open) resolution:
 
 ```js
-file.open("test/hello.txt")
+file.open("example.txt")
   .then((source) => source.read(5)
     .then((buffer) => (console.log(buffer), source.skip(2).readString(5)))
     .then((string) => console.log(string))
@@ -68,7 +68,7 @@ file.source(options).open(path)
 For example:
 
 ```js
-file.open("source.txt")
+file.open("example.txt")
   .then((source) => source.close())
   .catch((error) => console.error(error.stack));
 ```
@@ -84,7 +84,7 @@ After opening, you can call [*source*.close](#source_close) to close the file. A
 Advances this source’s position by *length* bytes and returns a promise that yields a buffer containing bytes \[*position*, … *position* + *length* - 1\], inclusive, from the underlying file. For example:
 
 ```js
-file.open("source.txt")
+file.open("example.txt")
   .then((source) => source.read(5)
     .then((buffer) => console.log(buffer))
     .catch((error) => source.close().then(() => { throw error; }))
@@ -95,7 +95,7 @@ file.open("source.txt")
 If the file is shorter than *position* + *length*, the yielded buffer may contain fewer than *length* (and possibly zero) bytes. For example, to read a file in 20-byte chunks:
 
 ```js
-file.open("source.txt")
+file.open("example.txt")
   .then((source) => Promise.resolve()
     .then(function repeat() { return source.read(20)
       .then((buffer) => buffer.length && (console.log(buffer), repeat())); })
