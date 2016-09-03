@@ -1,4 +1,4 @@
-var file = require("../../../"),
+var file = require("../../"),
     tape = require("tape");
 
 for (let i of [0, 2, null]) {
@@ -63,11 +63,12 @@ for (let i of [0, 2, null]) {
   tape("source.read(length) serializes parallel reads", function(test) {
     file.open("test/hello.txt", options)
       .then((source) => Promise.all([
-          source.readString(5).then((s) => test.equal(s, "Hello")),
-          source.skip(2).readString(5).then((s) => test.equal(s, "world"))
+          source.read(5).then((buffer) => test.equal(buffer.toString(), "Hello")),
+          source.skip(2).read(5).then((buffer) => test.equal(buffer.toString(), "world"))
         ])
         .then(() => source.close()))
-      .then(() => test.end());
+      .then(() => test.end())
+      .catch((error) => console.error(error.stack));
   });
 
   tape("source.read(length) throws an error if the length is invalid", function(test) {
