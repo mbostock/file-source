@@ -3,8 +3,8 @@ var file = require("../../"),
 
 tape("source.close() yields a closed file.source", function(test) {
   file.open("test/hello.txt")
-    .then((hello) => hello.close()
-      .then((_) => (test.equal(_, hello), test.end())));
+    .then((source) => source.close()
+      .then((_) => (test.equal(_, source), test.end())));
 });
 
 tape("source.close() throws an error if the source is already closed", function(test) {

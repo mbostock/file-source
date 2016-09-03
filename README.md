@@ -6,17 +6,17 @@ Read binary files in chunks, on demand, with promises. To load:
 var file = require("file-source");
 ```
 
-To read a file *hello* in two parts, and then close it safely:
+Here’s how you might read a file in two parts, and then close it safely:
 
 ```js
-var hello = file.source();
+var source = file.source();
 
-hello.open("test/hello.txt")
-  .then(() => hello.read(5))
-  .then((buffer) => (console.log(buffer), hello.skip(2).readString(5)))
+source.open("test/hello.txt")
+  .then(() => source.read(5))
+  .then((buffer) => (console.log(buffer), source.skip(2).readString(5)))
   .then((string) => console.log(string))
-  .catch((error) => hello.close().then(() => { throw error; }))
-  .then(() => hello.close())
+  .catch((error) => source.close().then(() => { throw error; }))
+  .then(() => source.close())
   .catch((error) => console.error(error.stack));
 ```
 
@@ -31,11 +31,11 @@ To avoid the local variable, put [read](#source_read) and [close](#source_close)
 
 ```js
 file.open("test/hello.txt")
-  .then((hello) => hello.read(5)
-    .then((buffer) => (console.log(buffer), hello.skip(2).readString(5)))
+  .then((source) => source.read(5)
+    .then((buffer) => (console.log(buffer), source.skip(2).readString(5)))
     .then((string) => console.log(string))
-    .catch((error) => hello.close().then(() => { throw error; }))
-    .then(() => hello.close()))
+    .catch((error) => source.close().then(() => { throw error; }))
+    .then(() => source.close()))
   .catch((error) => console.error(error.stack));
 ```
 
@@ -68,8 +68,8 @@ file.source(options).open(path)
 For example:
 
 ```js
-file.open("hello.txt")
-  .then((hello) => hello.close())
+file.open("source.txt")
+  .then((source) => source.close())
   .catch((error) => console.error(error.stack));
 ```
 
@@ -84,22 +84,23 @@ After opening, you can call [*source*.close](#source_close) to close the file. A
 Advances this source’s position by *length* bytes and returns a promise that yields a buffer containing bytes \[*position*, … *position* + *length* - 1\], inclusive, from the underlying file. For example:
 
 ```js
-file.open("hello.txt")
-  .then((hello) => hello.read(5)
+file.open("source.txt")
+  .then((source) => source.read(5)
     .then((buffer) => console.log(buffer))
-    .catch((error) => hello.close().then(() => { throw error; }))
-    .then(() => hello.close()))
+    .catch((error) => source.close().then(() => { throw error; }))
+    .then(() => source.close()))
   .catch((error) => console.error(error.stack));
 ```
 
 If the file is shorter than *position* + *length*, the yielded buffer may contain fewer than *length* (and possibly zero) bytes. For example, to read a file in 20-byte chunks:
 
 ```js
-file.open("hello.txt")
-  .then((hello) => Promise.resolve()
-    .then(function next() { return hello.read(20).then((chunk) => chunk.length && (console.log(chunk), next())); })
-    .catch((error) => hello.close().then(() => { throw error; }))
-    .then(() => hello.close()))
+file.open("source.txt")
+  .then((source) => Promise.resolve()
+    .then(function repeat() { return source.read(20)
+      .then((buffer) => buffer.length && (console.log(buffer), repeat())); })
+    .catch((error) => source.close().then(() => { throw error; }))
+    .then(() => source.close()))
   .catch((error) => console.error(error.stack));
 ```
 
