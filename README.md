@@ -1,48 +1,25 @@
 # file-source
 
-Read binary files in chunks, on demand, with promises. To load:
+A [readable stream reader](https://streams.spec.whatwg.org/#readable-stream-reader) implementation on top of a Node [file read stream](https://nodejs.org/api/fs.html#fs_fs_createreadstream_path_options). This library allows you to write code that takes a *reader* as input, and can work with either native readable streams or Node streams. For example, to read a file:
 
 ```js
 var file = require("file-source");
-```
 
-Here’s how you might read a file in two parts, and then close it safely:
+function read(source) {
+  return source.read().then((result) => {
+    if (result.done) return;
+    process.stdout.write(result.value);
+    return read(source);
+  });
+}
 
-```js
-var source = file.source();
-
-source.open("example.txt")
-  .then(() => source.read(5))
-  .then((buffer) => (console.log(buffer), source.skip(2).read(5)))
-  .then((buffer) => console.log(buffer))
-  .catch((error) => source.close().then(() => { throw error; }))
-  .then(() => source.close())
+read(file.source("README.md"))
   .catch((error) => console.error(error.stack));
 ```
-
-The resulting output:
-
-```
-<Buffer 48 65 6c 6c 6f>
-<Buffer 77 6f 72 6c 64>
-```
-
-To avoid the local variable, put [read](#source_read) and [close](#source_close) operations inside the [*source*.open](#source_open) resolution:
-
-```js
-file.open("example.txt")
-  .then((source) => source.read(5)
-    .then((buffer) => (console.log(buffer), source.skip(2).read(5)))
-    .then((buffer) => console.log(buffer))
-    .catch((error) => source.close().then(() => { throw error; }))
-    .then(() => source.close()))
-  .catch((error) => console.error(error.stack));
-```
-
-If available, use [*promise*.finally](https://github.com/tc39/proposal-promise-finally) to close, rather than handling resolution and rejection separately.
 
 See also:
 
+* The [Readable Streams specification](https://streams.spec.whatwg.org/#rs)
 * The promise-y [binary-file](https://github.com/marvinroger/node-binary-file) by Marvin Roger
 * The fluent [binary-reader](https://github.com/gagle/node-binary-reader) by Gabriel Llamas
 * The [history of streams](http://dominictarr.com/post/145135293917/history-of-streams), [pull streams](http://dominictarr.com/post/149248845122/pull-streams-pull-streams-are-a-very-simple) and [pull-reader](https://github.com/dominictarr/pull-reader) by Dominic Tarr
@@ -51,67 +28,19 @@ See also:
 
 ## API Reference
 
-<a name="source" href="#source">#</a> file.<b>source</b>([<i>options</i>]) [<>](https://github.com/mbostock/file-source/blob/master/index.js#L4 "Source")
+<a name="source" href="#source">#</a> file.<b>source</b>(<i>path</i>) [<>](https://github.com/mbostock/file-source/blob/master/index.js "Source")
 
-Returns a new file source. The source is initially closed; use [file.open](#open) or [*source*.open](#source_open) to open a file. The supported options are:
+Returns a *source* for the file at the specified *path*.
 
-* `size` - the internal buffer size, akin to Node’s highWaterMark
+<a name="source_read" href="#source_read">#</a> <i>source</i>.<b>read</b>([<i>length</i>]) [<>](https://github.com/mbostock/stream-source/blob/master/read.js "Source")
 
-<a name="open" href="#open">#</a> file.<b>open</b>(<i>path</i>[, <i>options</i>]) [<>](https://github.com/mbostock/file-source/blob/master/index.js#L10 "Source")
+Returns a Promise for the next chunk of data from the underlying stream. The yielded result is an object with the following properties:
 
-Returns a promise that yields an open file source for the specified *path* and optional *options*. A convenience method equivalent to:
+* `value` - a [Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array) (a [Buffer](https://nodejs.org/api/buffer.html)), or undefined if the stream ended
+* `done` - a boolean which is true if the stream ended
 
-```js
-file.source(options).open(path)
-```
+If an optional *length* is specified, the promise will be yielded with a *value* of *length* bytes, or the remaining bytes of the underlying stream, if the underlying stream has more than zero but fewer than *length* bytes remaining. When no bytes remain in the stream, the yielded *value* will be undefined, and *done* will be true.
 
-For example:
+<a name="source_cancel" href="#source_cancel">#</a> <i>source</i>.<b>cancel</b>() [<>](https://github.com/mbostock/stream-source/blob/master/cancel.js "Source")
 
-```js
-file.open("example.txt")
-  .then((source) => source.close())
-  .catch((error) => console.error(error.stack));
-```
-
-<a name="source_open" href="#source_open">#</a> <i>source</i>.<b>open</b>(<i>path</i>) [<>](https://github.com/mbostock/file-source/blob/master/source/open.js "Source")
-
-Returns a promise that yields an open file source for the specified *path*, positioned at the start of the file. Yields an error if this source is not closed or if there was an error opening the underlying file. In this case, this source is still considered closed, and you can use this source to open another file if desired.
-
-After opening, you can call [*source*.close](#source_close) to close the file. After closing, you can re-open a source with the same or different path, if desired. If this source was created using [file.open](#open), the yielded source is already open, and you don’t need to call this method.
-
-<a name="source_read" href="#source_read">#</a> <i>source</i>.<b>read</b>(<i>length</i>) [<>](https://github.com/mbostock/file-source/blob/master/source/read/index.js "Source")
-
-Advances this source’s position by *length* bytes and returns a promise that yields a buffer containing bytes \[*position*, … *position* + *length* - 1\], inclusive, from the underlying file. For example:
-
-```js
-file.open("example.txt")
-  .then((source) => source.read(5)
-    .then((buffer) => console.log(buffer))
-    .catch((error) => source.close().then(() => { throw error; }))
-    .then(() => source.close()))
-  .catch((error) => console.error(error.stack));
-```
-
-If the file is shorter than *position* + *length*, the yielded buffer may contain fewer than *length* (and possibly zero) bytes. For example, to read a file in 20-byte chunks:
-
-```js
-file.open("example.txt")
-  .then((source) => Promise.resolve()
-    .then(function repeat() { return source.read(20)
-      .then((buffer) => buffer.length && (console.log(buffer), repeat())); })
-    .catch((error) => source.close().then(() => { throw error; }))
-    .then(() => source.close()))
-  .catch((error) => console.error(error.stack));
-```
-
-<a name="source_seek" href="#source_seek">#</a> <i>source</i>.<b>seek</b>(<i>position</i>) [<>](https://github.com/mbostock/file-source/blob/master/source/seek.js "Source")
-
-Sets this source’s position to the specified *position* and returns this source.
-
-<a name="source_skip" href="#source_skip">#</a> <i>source</i>.<b>skip</b>(<i>length</i>) [<>](https://github.com/mbostock/file-source/blob/master/source/skip.js "Source")
-
-Sets this source’s position to the current position plus the specified *length* and returns this source.
-
-<a name="source_close" href="#source_close">#</a> <i>source</i>.<b>close</b>() [<>](https://github.com/mbostock/file-source/blob/master/source/close.js "Source")
-
-Returns a promise that yields a closed file source.
+Returns a Promise which is resolved when the underlying stream has been destroyed.

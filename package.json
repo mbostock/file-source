@@ -23,6 +23,9 @@
     "test": "tape 'test/**/*-test.js'",
     "postpublish": "git push && git push --tags"
   },
+  "dependencies": {
+    "stream-source": "0.1"
+  },
   "devDependencies": {
     "tape": "4"
   }
