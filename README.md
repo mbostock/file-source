@@ -13,7 +13,7 @@ function read(source) {
   });
 }
 
-read(file.source("README.md"))
+read(file("README.md"))
   .catch((error) => console.error(error.stack));
 ```
 
@@ -30,7 +30,7 @@ See also:
 
 ## API Reference
 
-<a name="source" href="#source">#</a> file.<b>source</b>(<i>path</i>) [<>](https://github.com/mbostock/file-source/blob/master/index.js "Source")
+<a name="file" href="#file">#</a> <b>file</b>(<i>path</i>) [<>](https://github.com/mbostock/file-source/blob/master/index.js "Source")
 
 Returns a *source* for the file at the specified *path*.
 

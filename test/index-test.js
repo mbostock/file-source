@@ -2,7 +2,7 @@ var file = require("../"),
     tape = require("tape");
 
 tape("source.read() yields {value: buffer, done: false} from the underlying file", function(test) {
-  var source = file.source("test/hello.txt");
+  var source = file("test/hello.txt");
   source.read().then((result) => {
     test.equal(result.done, false);
     test.equal(result.value.toString(), "Hello, world!\n");
@@ -11,7 +11,7 @@ tape("source.read() yields {value: buffer, done: false} from the underlying file
 });
 
 tape("source.read(length) yields {value: buffer, done: false} from the underlying file", function(test) {
-  var source = file.source("test/hello.txt");
+  var source = file("test/hello.txt");
   source.read(7).then((result) => {
     test.equal(result.done, false);
     test.equal(result.value.toString(), "Hello, ");
@@ -28,7 +28,7 @@ tape("source.read(length) yields {value: buffer, done: false} from the underlyin
 });
 
 tape("source.read() yields {value: undefined, done: true} after reading the underlying file", function(test) {
-  var source = file.source("test/hello.txt");
+  var source = file("test/hello.txt");
   source.read().then(() => source.read()).then((result) => {
     test.equal(result.done, true);
     test.equal(result.value, undefined);

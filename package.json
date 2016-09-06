@@ -24,7 +24,7 @@
     "postpublish": "git push && git push --tags"
   },
   "dependencies": {
-    "stream-source": "0.1"
+    "stream-source": "0.2"
   },
   "devDependencies": {
     "tape": "4"
