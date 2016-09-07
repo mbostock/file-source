@@ -1,6 +1,6 @@
 {
   "name": "file-source",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Read binary files in chunks, on demand, with promises.",
   "keywords": [
     "binary",
