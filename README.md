@@ -18,9 +18,11 @@ file("README.md")
 
 ## API Reference
 
-<a name="file" href="#file">#</a> <b>file</b>(<i>path</i>) [<>](https://github.com/mbostock/file-source/blob/master/index.js "Source")
+<a name="file" href="#file">#</a> <b>file</b>(<i>path</i>[, <i>options</i>]) [<>](https://github.com/mbostock/file-source/blob/master/index.js "Source")
 
-Returns a Promise that yields a *source* for the file at the specified *path* when the underlying file is open.
+Returns a Promise that yields a *source* for the file at the specified *path* when the underlying file is open. The following options are allowed:
+
+* `highWaterMark` - the stream’s internal buffer size; defaults to 65,536
 
 <a name="source_slice" href="#source_slice">#</a> <i>source</i>.<b>slice</b>(<i>length</i>) [<>](https://github.com/mbostock/stream-source/blob/master/slice.js "Source")
 
