@@ -11,6 +11,18 @@ tape("file(path) rejects if the specified file does not exist", function(test) {
     });
 });
 
+tape("file(path, options) can set the highWaterMark", function(test) {
+  file("test/hello.txt", {highWaterMark: 4})
+    .then(source => source.read()
+      .then(result => {
+        test.equal(result.done, false);
+        test.equal(result.value.toString(), "Hell");
+        return source.cancel();
+      }))
+    .then(() => test.end())
+    .catch(error => test.end(error));
+});
+
 tape("source.read() yields {value: buffer, done: false} from the underlying file", function(test) {
   file("test/hello.txt")
     .then(source => source.read()
