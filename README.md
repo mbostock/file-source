@@ -13,7 +13,7 @@ file("README.md")
       return read(source);
     });
   })
-  .catch((error) => console.error(error.stack));
+  .catch(error => console.error(error.stack));
 ```
 
 ## API Reference
